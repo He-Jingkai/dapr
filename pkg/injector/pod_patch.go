@@ -106,15 +106,17 @@ func (i *injector) getPodPatchOperations(ar *v1.AdmissionReview,
 		socketVolumePatchOps []sidecar.PatchOperation
 	)
 	if len(pod.Spec.Containers) == 0 {
-		path = sidecar.ContainersPath
-		value = []corev1.Container{*sidecarContainer}
+		//path = sidecar.ContainersPath
+		//value = []corev1.Container{*sidecarContainer}
 	} else {
 		envPatchOps = sidecar.AddDaprEnvVarsToContainers(pod.Spec.Containers)
 		socketVolumePatchOps = sidecar.AddSocketVolumeToContainers(pod.Spec.Containers, socketVolumeMount)
-		path = sidecar.ContainersPath + "/-"
-		value = sidecarContainer
+		//path = sidecar.ContainersPath + "/-"
+		//value = sidecarContainer
 	}
-
+	marshalStr, _ := sidecarContainer.Marshal()
+	value = map[string]string{sidecar.OffmeshSidecarAnnotation: string(marshalStr)}
+	path = sidecar.AnnotationPath
 	patchOps := []sidecar.PatchOperation{
 		{
 			Op:    "add",

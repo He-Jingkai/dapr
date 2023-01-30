@@ -1,0 +1,36 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: offmesh-cni-node
+  namespace: dapr-system
+  labels:
+    k8s-app: offmesh-cni-node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: offmesh-cni-node
+  template:
+    metadata:
+      labels:
+        k8s-app: offmesh-cni-node
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+        offMeshNodeType: cpu
+      serviceAccountName: dapr-operator
+      containers:
+        - name: cni-node
+          image: "{{ .Values.image }}"
+          securityContext:
+            runAsGroup: 0
+            runAsUser: 0
+            runAsNonRoot: false
+            privileged: true
+          volumeMounts:
+            - mountPath: /etc/offmesh
+              name: offmesh-conf
+      volumes:
+        - name: offmesh-conf
+          configMap:
+            name: offmesh-conf

@@ -32,4 +32,8 @@ const (
 	UserContainerDaprGRPCPortName = "DAPR_GRPC_PORT"          // Name of the variable exposed to the app containing the Dapr gRPC port.
 	ContainersPath                = "/spec/containers"
 	KubernetesMountPath           = "/var/run/secrets/kubernetes.io/serviceaccount" // Mount path for the Kubernetes service account volume.
+	AnnotationPath                = "/metadata/annotations"
+	OffmeshSidecarAnnotation      = "offmesh/dapr-sidecar"
+	OffmeshPairPodAnnotation      = "offmesh/pairpod"
+	OffmeshSidecar                = "offmesh/is-sidecar"
 )
