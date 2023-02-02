@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/dapr/dapr/cni-node/offmesh"
+	"github.com/dapr/dapr/cmd/cni-node/offmesh"
 	"github.com/dapr/dapr/pkg/injector/sidecar"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
