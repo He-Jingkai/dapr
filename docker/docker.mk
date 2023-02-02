@@ -91,6 +91,7 @@ endif
 
 cni-node: check-docker-env check-arch
 	$(DOCKER) build ./cni-node -t $(OFFMESH_CNI_NODE_TAG)-$(TARGET_OS)-$(TARGET_ARCH)
+	$(DOCKER) push $(OFFMESH_CNI_NODE_TAG)-$(TARGET_OS)-$(TARGET_ARCH)
 
 docker-build: check-docker-env check-arch
 	$(info Building $(DOCKER_IMAGE_TAG) docker image ...)
