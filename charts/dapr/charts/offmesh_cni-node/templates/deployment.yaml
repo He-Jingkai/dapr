@@ -21,7 +21,7 @@ spec:
       serviceAccountName: dapr-operator
       containers:
         - name: cni-node
-          image: "{{ .Values.image }}"
+          image: "{{ .Values.image.name }}"
           securityContext:
             runAsGroup: 0
             runAsUser: 0

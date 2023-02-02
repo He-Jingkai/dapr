@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dapr/dapr/cni-node/offmesh"
+	"github.com/dapr/dapr/cmd/cni-node/offmesh"
 	"github.com/dapr/dapr/utils"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
@@ -21,10 +21,7 @@ func main() {
 	kubeClient = utils.GetKubeClient()
 	factory := informers.NewSharedInformerFactoryWithOptions(kubeClient, 0)
 	informer := factory.Core().V1().Pods().Informer()
-	_, err := informer.AddEventHandler(EventHandler())
-	if err != nil {
-		log.Println("AddEventHandler error:", err)
-	}
+	informer.AddEventHandler(EventHandler())
 	stopper := make(chan struct{}, 2)
 	go informer.Run(stopper)
 	log.Println("watch pod started...")

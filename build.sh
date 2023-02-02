@@ -4,4 +4,6 @@ export DAPR_TAG=hjk-1.00
 make build-linux
 make docker-build
 make docker-push
-make cni-node
+
+helm uninstall dapr -n dapr-system
+make docker-deploy-k8s
