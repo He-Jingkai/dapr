@@ -26,7 +26,7 @@ func EventHandler() *cache.ResourceEventHandlerFuncs {
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			pod := newObj.(*corev1.Pod)
-			log.Printf("[OnUpdate] pod name: %s \n, oldObj:%s \n, newObj: %s\n", pod.ObjectMeta.Name, oldObj.(*corev1.Pod).String(), newObj.(*corev1.Pod).String())
+			log.Printf("[OnUpdate] pod name: %s \n", pod.ObjectMeta.Name)
 		},
 		DeleteFunc: func(obj interface{}) {
 			pod := obj.(*corev1.Pod)
