@@ -19,8 +19,7 @@ var (
 func main() {
 	offmeshCluster = offmesh.ReadClusterConfigYaml(offmesh.ClusterConfigYamlPath)
 	kubeClient = utils.GetKubeClient()
-	factory := informers.NewSharedInformerFactoryWithOptions(kubeClient, 0)
-	informer := factory.Core().V1().Pods().Informer()
+	informer := informers.NewSharedInformerFactoryWithOptions(kubeClient, 0).Core().V1().Pods().Informer()
 	informer.AddEventHandler(EventHandler())
 	stopper := make(chan struct{}, 2)
 	go informer.Run(stopper)

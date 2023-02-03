@@ -16,6 +16,7 @@ func GetSidecarPodName(podName string) string {
 func GetSidecarPod(pod *corev1.Pod) (*corev1.Pod, error) {
 	ctr := corev1.Container{}
 	err := ctr.Unmarshal([]byte(pod.Annotations[sidecar.OffmeshSidecarAnnotation]))
+	log.Println("[GetSidecarPod] sidecar ctr: ", ctr.String())
 	newPod := corev1.Pod{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: `v1`,
@@ -42,6 +43,7 @@ func GetSidecarPod(pod *corev1.Pod) (*corev1.Pod, error) {
 			}
 		}
 	}
+	log.Println("[GetSidecarPod] new pod: ", newPod.String())
 	return &newPod, err
 }
 

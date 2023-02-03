@@ -22,6 +22,8 @@ spec:
       containers:
         - name: cni-node
           image: "{{ .Values.global.registry }}/offmesh-cni:{{ .Values.global.tag }}"
+          command:
+            - "/cni-node"
           securityContext:
             runAsGroup: 0
             runAsUser: 0

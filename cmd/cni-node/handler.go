@@ -13,6 +13,7 @@ func EventHandler() *cache.ResourceEventHandlerFuncs {
 	return &cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			pod := obj.(*corev1.Pod)
+			log.Println("[OnAdd] pod name: ", pod.ObjectMeta.Name)
 			if offmesh.NodeType(pod.Spec.NodeName, offmeshCluster) == offmesh.CPUNode &&
 				sidecar.Annotations(pod.Annotations).GetBoolOrDefault(annotations.KeyEnabled, false) {
 				log.Println("[OnAdd] handling dapr worker pod, name: ", pod.ObjectMeta.Name)
@@ -25,10 +26,11 @@ func EventHandler() *cache.ResourceEventHandlerFuncs {
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			pod := newObj.(*corev1.Pod)
-			log.Println("[OnUpdate] pod name: ", pod.ObjectMeta.Name)
+			log.Printf("[OnUpdate] pod name: %s \n, oldObj:%s \n, newObj: %s\n", pod.ObjectMeta.Name, oldObj.(*corev1.Pod).String(), newObj.(*corev1.Pod).String())
 		},
 		DeleteFunc: func(obj interface{}) {
 			pod := obj.(*corev1.Pod)
+			log.Println("[OnDelete] pod name: ", pod.ObjectMeta.Name)
 			if offmesh.NodeType(pod.Spec.NodeName, offmeshCluster) == offmesh.CPUNode &&
 				sidecar.Annotations(pod.Annotations).GetBoolOrDefault(annotations.KeyEnabled, false) {
 				log.Println("[OnDelete] pod name: ", pod.ObjectMeta.Name)
