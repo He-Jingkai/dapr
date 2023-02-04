@@ -2,12 +2,10 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"github.com/dapr/dapr/pkg/injector/sidecar"
 	"github.com/dapr/dapr/utils"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/remotecommand"
 	"log"
@@ -62,18 +60,10 @@ func ExecuteInContainer(podName string, podNamespace string, cmd []string) (stri
 // iptables -A OUTPUT -t nat -p tcp --dst 127.0.0.1 --dport daprGRPCPort -j DNAT --to-destination daprIP:daprGRPCPort
 // iptables -A PREROUTING -t nat -p tcp --src daprIP -j SNAT --to-source 127.0.0.1
 
-func AddNetworkRulesToPod(daprPod *corev1.Pod) {
-	pairPodName := daprPod.ObjectMeta.Annotations[sidecar.OffmeshPairPodAnnotation]
-	pairPodNamespace := daprPod.ObjectMeta.Namespace
-	daprIP := daprPod.Status.PodIP
+func AddNetworkRulesToPod(pod *corev1.Pod, daprIP string) {
 	daprHttpPort := ""
 	daprGRPCPort := ""
-	pairPod, err := kubeClient.CoreV1().Pods(pairPodNamespace).Get(context.Background(), pairPodName, metav1.GetOptions{})
-	if err != nil {
-		log.Println("[AddNetworkRulesToPod] get pair pod error: ", err)
-		return
-	}
-	for _, env := range pairPod.Spec.Containers[0].Env {
+	for _, env := range pod.Spec.Containers[0].Env {
 		if env.Name == sidecar.UserContainerDaprHTTPPortName {
 			daprHttpPort = env.Value
 		} else if env.Name == sidecar.UserContainerDaprGRPCPortName {
@@ -118,7 +108,7 @@ func AddNetworkRulesToPod(daprPod *corev1.Pod) {
 		},
 	}
 	for _, cmd := range cmds {
-		stdout, stderr, err := ExecuteInContainer(pairPodName, pairPodNamespace, cmd)
+		stdout, stderr, err := ExecuteInContainer(pod.ObjectMeta.Name, pod.ObjectMeta.Namespace, cmd)
 		if err != nil {
 			log.Println("[AddNetworkRulesToPod] kubectl exec error: ", err)
 			return

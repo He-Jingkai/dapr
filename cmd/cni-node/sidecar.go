@@ -15,6 +15,10 @@ func GetSidecarPodName(podName string) string {
 	return podName + "-proxy"
 }
 
+func GetWorkerPodName(daprPod *corev1.Pod) string {
+	return daprPod.ObjectMeta.Annotations[sidecar.OffmeshPairPodAnnotation]
+}
+
 func GetSidecarPod(pod *corev1.Pod) (*corev1.Pod, error) {
 	ctr := corev1.Container{}
 	marshalStr := pod.Annotations[sidecar.OffmeshSidecarAnnotation]
