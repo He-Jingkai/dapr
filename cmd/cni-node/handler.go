@@ -33,7 +33,7 @@ func EventHandler() *cache.ResourceEventHandlerFuncs {
 	return &cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			pod := obj.(*corev1.Pod)
-			log.Printf("[OnAdd] pod name: %s, NodeName:%s, dapr.io/enabled: %s, offmesh/is-sidecar:%s \n", pod.Spec.NodeName, pod.ObjectMeta.Name, sidecar.Annotations(pod.Annotations)[annotations.KeyEnabled], sidecar.Annotations(pod.Annotations)[sidecar.OffmeshSidecar])
+			log.Printf("[OnAdd] pod name: %s, NodeName:%s, dapr.io/enabled: %s, offmesh/is-sidecar:%s \n", pod.ObjectMeta.Name, pod.Spec.NodeName, sidecar.Annotations(pod.Annotations)[annotations.KeyEnabled], sidecar.Annotations(pod.Annotations)[sidecar.OffmeshSidecar])
 			if pod.Spec.NodeName == "" {
 				log.Println("[OnAdd] no nodeName")
 			}

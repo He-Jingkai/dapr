@@ -65,7 +65,6 @@ const (
 )
 
 // Default values
-//DefaultSidecarListenAddresses            = "[::1],127.0.0.1"
 
 const (
 	DefaultLogLevel                          = "info"
@@ -76,7 +75,7 @@ const (
 	DefaultMetricsPort                       = 9090
 	DefaultEnableDebug                       = false
 	DefaultDebugPort                         = 40000
-	DefaultSidecarListenAddresses            = "[::],0.0.0.0"
+	DefaultSidecarListenAddresses            = "[::1],127.0.0.1"
 	DefaultHealthzProbeDelaySeconds          = 3
 	DefaultHealthzProbeTimeoutSeconds        = 3
 	DefaultHealthzProbePeriodSeconds         = 6

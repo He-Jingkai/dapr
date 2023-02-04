@@ -17,6 +17,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/admission/v1"
@@ -114,8 +115,12 @@ func (i *injector) getPodPatchOperations(ar *v1.AdmissionReview,
 		//path = sidecar.ContainersPath + "/-"
 		//value = sidecarContainer
 	}
-	marshalStr, _ := sidecarContainer.Marshal()
-	newAnnotations := map[string]string{sidecar.OffmeshSidecarAnnotation: string(marshalStr)}
+	bytes, _ := sidecarContainer.Marshal()
+	marshalStr := ""
+	for _, byte_ := range bytes {
+		marshalStr += strconv.Itoa(int(byte_)) + " "
+	}
+	newAnnotations := map[string]string{sidecar.OffmeshSidecarAnnotation: marshalStr}
 	for k, v := range pod.Annotations {
 		newAnnotations[k] = v
 	}

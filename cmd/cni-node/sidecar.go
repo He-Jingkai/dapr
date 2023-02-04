@@ -7,6 +7,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
+	"strconv"
+	"strings"
 )
 
 func GetSidecarPodName(podName string) string {
@@ -15,7 +17,14 @@ func GetSidecarPodName(podName string) string {
 
 func GetSidecarPod(pod *corev1.Pod) (*corev1.Pod, error) {
 	ctr := corev1.Container{}
-	err := ctr.Unmarshal([]byte(pod.Annotations[sidecar.OffmeshSidecarAnnotation]))
+	marshalStr := pod.Annotations[sidecar.OffmeshSidecarAnnotation]
+	bytesStr := strings.Fields(marshalStr)
+	var bytes []byte
+	for _, byteStr := range bytesStr {
+		byte_, _ := strconv.Atoi(byteStr)
+		bytes = append(bytes, byte(byte_))
+	}
+	err := ctr.Unmarshal(bytes)
 	log.Println("[GetSidecarPod] sidecar ctr: ", ctr.String())
 	newPod := corev1.Pod{
 		TypeMeta: metav1.TypeMeta{
