@@ -100,8 +100,8 @@ func (i *injector) getPodPatchOperations(ar *v1.AdmissionReview,
 	}
 
 	var (
-		path                 string
-		value                any
+		//path                 string
+		//value                any
 		envPatchOps          []sidecar.PatchOperation
 		socketVolumePatchOps []sidecar.PatchOperation
 	)
@@ -115,13 +115,15 @@ func (i *injector) getPodPatchOperations(ar *v1.AdmissionReview,
 		//value = sidecarContainer
 	}
 	marshalStr, _ := sidecarContainer.Marshal()
-	value = map[string]string{sidecar.OffmeshSidecarAnnotation: string(marshalStr)}
-	path = sidecar.AnnotationPath
+	newAnnotations := map[string]string{sidecar.OffmeshSidecarAnnotation: string(marshalStr)}
+	for k, v := range pod.Annotations {
+		newAnnotations[k] = v
+	}
 	patchOps := []sidecar.PatchOperation{
 		{
 			Op:    "add",
-			Path:  path,
-			Value: value,
+			Path:  sidecar.AnnotationPath,
+			Value: newAnnotations,
 		},
 	}
 	patchOps = append(patchOps, envPatchOps...)
