@@ -14,6 +14,7 @@ import (
 var (
 	kubeClient     *kubernetes.Clientset
 	offmeshCluster offmesh.ClusterConfig
+	NodeName       = os.Getenv("NodeName")
 )
 
 func main() {

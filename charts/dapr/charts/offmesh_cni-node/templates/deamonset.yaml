@@ -1,4 +1,4 @@
-kind: Deployment
+kind: DaemonSet
 apiVersion: apps/v1
 metadata:
   name: offmesh-cni-node
@@ -15,6 +15,7 @@ spec:
       labels:
         k8s-app: offmesh-cni-node
     spec:
+      hostNetwork: true
       nodeSelector:
         kubernetes.io/os: linux
         offMeshNodeType: cpu
@@ -29,9 +30,17 @@ spec:
             runAsUser: 0
             runAsNonRoot: false
             privileged: true
+            capabilities:
+              add: [ "NET_ADMIN" ]
           volumeMounts:
             - mountPath: /etc/offmesh
               name: offmesh-conf
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
       volumes:
         - name: offmesh-conf
           configMap:

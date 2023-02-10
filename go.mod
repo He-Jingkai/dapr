@@ -60,6 +60,7 @@ require (
 )
 
 require (
+	github.com/containerd/go-runc v1.0.0
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.7.0
@@ -71,9 +72,11 @@ require (
 )
 
 require (
+	github.com/containerd/console v1.0.3 // indirect
 	github.com/emicklei/go-restful/v3 v3.8.0 // indirect
 	github.com/google/gnostic v0.5.7-v3refs // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/opencontainers/runtime-spec v1.0.3-0.20210326190908-1c3f411f0417 // indirect
 )
 
 require (
@@ -182,7 +185,6 @@ require (
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/eclipse/paho.mqtt.golang v1.4.2-0.20221018190109-a1800d8df9a4 // indirect
-	github.com/emicklei/go-restful v2.9.5+incompatible // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/evanphx/json-patch v4.12.0+incompatible // indirect
 	github.com/fasthttp-contrib/sessions v0.0.0-20160905201309-74f6ac73d5d5 // indirect
@@ -383,7 +385,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/component-base v0.23.0 // indirect
 	k8s.io/gengo v0.0.0-20210813121822-485abfe95c7c // indirect
-	k8s.io/klog/v2 v2.70.1 // indirect
+	k8s.io/klog/v2 v2.70.1
 	k8s.io/kube-openapi v0.0.0-20220803162953-67bda5d908f1 // indirect
 	k8s.io/utils v0.0.0-20220728103510-ee6ede2d64ed // indirect
 	sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2 // indirect
