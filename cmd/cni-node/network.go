@@ -25,6 +25,25 @@ const (
 	NSENTER          = "nsenter"
 )
 
+func AddNetworkRules(stopper chan struct{}, handler func(pod *corev1.Pod)) {
+LOOP:
+	for {
+		select {
+		case <-stopper:
+			break LOOP
+		default:
+			if addNetworkQueue.Length() != 0 {
+				addNetworkQueueLock.Lock()
+				podObj := addNetworkQueue.Remove()
+				addNetworkQueueLock.Unlock()
+				pod := podObj.(*corev1.Pod)
+				handler(pod)
+			}
+			time.Sleep(time.Second * 1)
+		}
+	}
+}
+
 func ExecuteInContainer(podName string, podNamespace string, cmd []string) (string, string, error) {
 	req := kubeClient.CoreV1().RESTClient().Post().Resource("pods").Name(podName).
 		Namespace(podNamespace).SubResource("exec")
@@ -196,13 +215,14 @@ func GetNetworkRulesInWorkerPod(daprPodIP string, daprHttpPort string, daprGRPCP
 	}
 }
 
-func ExecUsingNSEnter(pid int, cmd []string) error {
-	args := append([]string{fmt.Sprintf("--pid=%v", pid), "--"}, cmd...)
+func ExecUsingNSEnter(pid string, cmd []string) error {
+	args := append([]string{"-u", "-n", "-p", "-t", pid, "--"}, cmd...)
 	command := exec.Command(NSENTER, args...)
 	stdout := &bytes.Buffer{}
 	stderr := &bytes.Buffer{}
 	command.Stdout = stdout
 	command.Stderr = stderr
+	log.Println("[ExecUsingNSEnter] cmd to run ", command.String())
 	err := command.Run()
 	if len(stdout.String()) != 0 {
 		log.Printf("Command %v output: %v\n", command.String(), stdout.String())
@@ -224,12 +244,12 @@ func AddRedirectInDaprPod(pod *corev1.Pod) {
 			break
 		}
 	}
-	ctr, err := GetContainerByID(pod.Status.ContainerStatuses[0].ContainerID)
+	ctrPID, err := GetContainerPIDByID(pod.Status.ContainerStatuses[0].ContainerID)
 	if err != nil {
 		log.Println("AddRedirectInDaprPod get ctr error", err)
 	}
 	for _, cmd := range GetNetworkRulesInDaprPod(workerPodIp, appPort) {
-		err = ExecUsingNSEnter(ctr.Pid, cmd)
+		err = ExecUsingNSEnter(ctrPID, cmd)
 		if err != nil {
 			log.Println("AddRedirectInDaprPod error", err)
 		}
@@ -255,12 +275,12 @@ func AddRedirectInWorkerPod(pod *corev1.Pod) {
 		}
 		time.Sleep(time.Second)
 	}
-	ctr, err := GetContainerByID(pod.Status.ContainerStatuses[0].ContainerID)
+	ctrPID, err := GetContainerPIDByID(pod.Status.ContainerStatuses[0].ContainerID)
 	if err != nil {
 		log.Println("AddRedirectInWorkerPod get ctr error", err)
 	}
 	for _, cmd := range GetNetworkRulesInWorkerPod(daprPodIP, daprHttpPort, daprGRPCPort) {
-		err = ExecUsingNSEnter(ctr.Pid, cmd)
+		err = ExecUsingNSEnter(ctrPID, cmd)
 		if err != nil {
 			log.Println("AddRedirectInWorkerPod error", err)
 		}

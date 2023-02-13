@@ -30,6 +30,8 @@ func GetSidecarPod(pod *corev1.Pod) (*corev1.Pod, error) {
 	}
 	err := ctr.Unmarshal(bytes)
 	log.Println("[GetSidecarPod] sidecar ctr: ", ctr.String())
+	ctr.LivenessProbe = nil
+	ctr.ReadinessProbe = nil
 	newPod := corev1.Pod{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: `v1`,

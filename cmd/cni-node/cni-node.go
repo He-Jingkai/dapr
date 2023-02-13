@@ -3,18 +3,22 @@ package main
 import (
 	"github.com/dapr/dapr/cmd/cni-node/offmesh"
 	"github.com/dapr/dapr/utils"
+	"github.com/eapache/queue"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"log"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 )
 
 var (
-	kubeClient     *kubernetes.Clientset
-	offmeshCluster offmesh.ClusterConfig
-	NodeName       = os.Getenv("NodeName")
+	kubeClient          *kubernetes.Clientset
+	offmeshCluster      offmesh.ClusterConfig
+	NodeName            = os.Getenv("NODE_NAME")
+	addNetworkQueue     = queue.New()
+	addNetworkQueueLock = sync.Mutex{}
 )
 
 func main() {
@@ -25,7 +29,12 @@ func main() {
 	stopper := make(chan struct{}, 2)
 	go informer.Run(stopper)
 	log.Println("watch pod started...")
-
+	if offmesh.NodeType(NodeName, offmeshCluster) == offmesh.CPUNode {
+		go AddNetworkRules(stopper, AddRedirectInWorkerPod)
+	} else if offmesh.NodeType(NodeName, offmeshCluster) == offmesh.DPUNode {
+		go AddNetworkRules(stopper, AddRedirectInDaprPod)
+	}
+	log.Println("add-network-rules started")
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 

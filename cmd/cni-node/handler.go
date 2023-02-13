@@ -29,6 +29,7 @@ func DPUNodeEventHandler() *cache.ResourceEventHandlerFuncs {
 				allReady = allReady && ctrStatus.Ready
 			}
 			if allReady {
+				log.Printf("%s oldPod all ready", newPod.ObjectMeta.Name)
 				return
 			}
 			allReady = true
@@ -36,7 +37,10 @@ func DPUNodeEventHandler() *cache.ResourceEventHandlerFuncs {
 				allReady = allReady && ctrStatus.Ready
 			}
 			if allReady {
-				go AddRedirectInDaprPod(newPod)
+				log.Printf("%s add to queue", newPod.ObjectMeta.Name)
+				addNetworkQueueLock.Lock()
+				addNetworkQueue.Add(newPod)
+				addNetworkQueueLock.Unlock()
 			}
 		},
 	}
@@ -69,6 +73,7 @@ func CPUNodeEventHandler() *cache.ResourceEventHandlerFuncs {
 				allReady = allReady && ctrStatus.Ready
 			}
 			if allReady {
+				log.Printf("%s oldPod all ready", newPod.ObjectMeta.Name)
 				return
 			}
 			allReady = true
@@ -76,7 +81,10 @@ func CPUNodeEventHandler() *cache.ResourceEventHandlerFuncs {
 				allReady = allReady && ctrStatus.Ready
 			}
 			if allReady {
-				go AddRedirectInWorkerPod(newPod)
+				log.Printf("%s add to queue", newPod.ObjectMeta.Name)
+				addNetworkQueueLock.Lock()
+				addNetworkQueue.Add(newPod)
+				addNetworkQueueLock.Unlock()
 			}
 
 		},

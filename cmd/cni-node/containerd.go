@@ -1,22 +1,26 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	ctr "github.com/containerd/go-runc"
+	"k8s.io/kubernetes/pkg/kubelet/cri/remote"
+	"time"
 )
 
-func GetContainerByID(id string) (*ctr.Container, error) {
-	ctrRunc := &ctr.Runc{}
-	list, err := ctrRunc.List(context.Background())
+const (
+	RootMountPath        = "/host/root"
+	ContainerdSocketPath = "/run/containerd/containerd.sock"
+	Unix                 = "unix://"
+	defaultTimeout       = 2 * time.Second
+	PID                  = "pid"
+)
+
+func GetContainerPIDByID(id string) (string, error) {
+	service, err := remote.NewRemoteRuntimeService(Unix+RootMountPath+ContainerdSocketPath, defaultTimeout, nil)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	fmt.Printf("get ctrs %v\n", list)
-	for _, container := range list {
-		if container.ID == id {
-			return container, nil
-		}
+	status, err := service.ContainerStatus(id, true)
+	if err != nil {
+		return "", err
 	}
-	return nil, fmt.Errorf("no containerd named %s", id)
+	return status.Info[PID], nil
 }

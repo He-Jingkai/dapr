@@ -6,7 +6,6 @@ metadata:
   labels:
     k8s-app: offmesh-cni-node
 spec:
-  replicas: 1
   selector:
     matchLabels:
       k8s-app: offmesh-cni-node
@@ -18,7 +17,6 @@ spec:
       hostNetwork: true
       nodeSelector:
         kubernetes.io/os: linux
-        offMeshNodeType: cpu
       serviceAccountName: dapr-operator
       containers:
         - name: cni-node
@@ -35,6 +33,9 @@ spec:
           volumeMounts:
             - mountPath: /etc/offmesh
               name: offmesh-conf
+            - mountPath: /host/root
+              name: root
+              readOnly: false
           env:
             - name: NODE_NAME
               valueFrom:
@@ -45,3 +46,6 @@ spec:
         - name: offmesh-conf
           configMap:
             name: offmesh-conf
+        - hostPath:
+            path: /
+            name: root
