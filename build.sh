@@ -1,5 +1,5 @@
 export DAPR_REGISTRY=registry.cn-hangzhou.aliyuncs.com/jkhe
-export DAPR_TAG=hjk-1.00
+export DAPR_TAG=hjk-1.44
 
 make build-linux
 make docker-build
