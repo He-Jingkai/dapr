@@ -46,6 +46,6 @@ spec:
         - name: offmesh-conf
           configMap:
             name: offmesh-conf
-        - hostPath:
+        - name: root
+          hostPath:
             path: /
-            name: root
